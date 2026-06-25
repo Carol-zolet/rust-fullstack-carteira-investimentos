@@ -2,8 +2,6 @@ use axum::{extract::FromRequestParts, http::header::AUTHORIZATION};
 
 use crate::{app::AppState, error::AppError};
 
-const ADMIN_SECRET_KEY: &str = "im-the-admin";
-
 pub struct Admin;
 
 impl FromRequestParts<AppState> for Admin {
@@ -17,7 +15,10 @@ impl FromRequestParts<AppState> for Admin {
             return Err(AppError::MissingAuthorization);
         };
 
-        if auth == ADMIN_SECRET_KEY {
+       let admin_secret = std::env::var("ADMIN_SECRET")
+            .map_err(|_| AppError::InvalidCredentials)?;
+
+        if auth.as_bytes() == admin_secret.as_bytes() {
             Ok(Admin)
         } else {
             Err(AppError::InvalidCredentials)
