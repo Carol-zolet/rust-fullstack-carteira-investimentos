@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carteira de Investimentos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-slate-950 min-h-screen text-white p-8" style="font-family: 'Space Mono', monospace;">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-2xl text-cyan-400 mb-2">Olá, {{ username }}</h1>
+        <p class="text-white/50 mb-8">Sua carteira de investimentos</p>
+
+        <div class="bg-white/5 border border-cyan-400/30 rounded-2xl p-6 mb-8">
+            <p class="text-white/50 text-sm">Valor total da carteira</p>
+            <p class="text-3xl text-cyan-400 font-bold">R$ {{ "{:.2}"|format(total) }}</p>
+        </div>
+
+        <h2 class="text-lg text-white/70 mb-4">Ativos</h2>
+        <div class="flex flex-col gap-2">
+            {% for asset in assets %}
+            <div class="bg-white/5 border border-white/10 rounded-xl p-4 flex justify-between">
+                <span>{{ asset.name }}</span>
+                <span class="text-cyan-400">R$ {{ "{:.2}"|format(asset.unit_value) }}</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

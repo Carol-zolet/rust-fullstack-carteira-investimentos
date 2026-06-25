@@ -11,6 +11,7 @@ use crate::{
     app::AppState,
     auth::user::{UnauthenticatedUser, User},
     error::AppError,
+    models::Asset,
     repository::Repository,
 };
 
@@ -23,6 +24,14 @@ pub fn router() -> Router<AppState> {
 #[derive(Template)]
 #[template(path = "login.html")]
 struct LoginPage;
+
+#[derive(Template)]
+#[template(path = "dashboard.html")]
+struct DashboardPage {
+    username: String,
+    assets: Vec<Asset>,
+    total: f64,
+}
 
 async fn login_page() -> Result<Html<String>, AppError> {
     let html = LoginPage.render()?;
@@ -53,9 +62,22 @@ async fn login(
     Ok((jar.add(cookie), Redirect::to("/")))
 }
 
-async fn index(maybe_user: Option<User>) -> Result<Response, AppError> {
+async fn index(
+    maybe_user: Option<User>,
+    repository: Repository,
+) -> Result<Response, AppError> {
     match maybe_user {
-        Some(user) => Ok(Html(format!("Hello, {}", user.username())).into_response()),
+        Some(user) => {
+            let assets = repository.list_assets().await?;
+            let total = repository.total_value().await?;
+            let page = DashboardPage {
+                username: user.username().to_string(),
+                assets,
+                total,
+            };
+            let html = page.render()?;
+            Ok(Html(html).into_response())
+        }
         None => Ok(Redirect::to("/login").into_response()),
     }
 }
