@@ -4,6 +4,8 @@ Aplicação fullstack para cadastrar e acompanhar ativos de investimento, desenv
 
 O projeto une API REST, banco de dados, autenticação e interface web numa única aplicação.
 
+![Dashboard da Carteira de Investimentos](docs/dashboard.png)
+
 > Este repositório é um fork do [projeto base da DIO](https://github.com/digitalinnovationone/rust-fullstack-carteira-investimentos), evoluído com correções de configuração, melhorias de funcionalidade, uma correção de segurança e testes.
 
 ---
