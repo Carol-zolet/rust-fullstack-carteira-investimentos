@@ -12,7 +12,7 @@ impl Repository {
     pub async fn list_assets(&self) -> sqlx::Result<Vec<Asset>> {
         sqlx::query_as!(
             Asset,
-            "SELECT id, name, unit_value
+            "SELECT id, name, unit_value, quantity
              FROM assets;"
         )
         .fetch_all(&self.db)
@@ -20,17 +20,17 @@ impl Repository {
     }
 
     pub async fn total_value(&self) -> sqlx::Result<f64> {
-        let assets = self.list_assets().await?;
-        let total: f64 = assets.iter().map(|asset| asset.unit_value).sum();
-        Ok(total)
-    }
+            let assets = self.list_assets().await?;
+            let total: f64 = assets.iter().map(|asset| asset.unit_value * asset.quantity as f64).sum();
+            Ok(total)
+}
 
     pub async fn create_asset(&self, name: String, unit_value: f64) -> sqlx::Result<Asset> {
         sqlx::query_as!(
             Asset,
             "INSERT INTO assets (name, unit_value)
              VALUES ($1, $2)
-             RETURNING id, name, unit_value;",
+             RETURNING id, name, unit_value, quantity;",
             name,
             unit_value
         )
@@ -49,7 +49,7 @@ impl Repository {
              SET name=COALESCE($2, name),
                  unit_value=COALESCE($3, unit_value)
              WHERE id=$1
-             RETURNING id, name, unit_value;",
+             RETURNING id, name, unit_value, quantity;",
             asset_id,
             name,
             unit_value

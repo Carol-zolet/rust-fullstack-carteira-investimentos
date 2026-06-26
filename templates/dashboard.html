@@ -21,7 +21,7 @@
         <div class="flex flex-col gap-2">
             {% for asset in assets %}
             <div class="bg-white/5 border border-white/10 rounded-xl p-4 flex justify-between">
-                <span>{{ asset.name }}</span>
+                <span>{{ asset.name }} <span class="text-white/40">×{{ asset.quantity }}</span></span>
                 <span class="text-cyan-400">R$ {{ "{:.2}"|format(asset.unit_value) }}</span>
             </div>
             {% endfor %}
