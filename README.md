@@ -77,7 +77,7 @@ A criação de ativos exige um header de autorização de admin (lido de variáv
 
 ```bash
 curl -X POST http://localhost:3000/api/assets \
-  -H "Authorization: im-the-admin" \
+  -H "Authorization: seu-admin-secret" \
   -H "Content-Type: application/json" \
   -d '{"name": "Bitcoin", "unit_value": 350000.00}'
 ```
@@ -98,10 +98,6 @@ A implementação tocou várias camadas: um novo método `total_value()` em `src
 
 Evoluí o modelo de ativos para incluir a **quantidade** de cada ativo. O valor total passou a considerar `valor_unitário × quantidade`. Esta melhoria envolveu uma **migration** nova para evoluir o schema do banco, além da atualização do model, das queries e do template.
 
-### 3. Correção de segurança: secret de admin fora do código
-
-Identifiquei que a credencial de admin estava **hardcoded** no código-fonte (`src/auth/admin.rs`) — uma falha de segurança num repositório público. Corrigi movendo o secret para uma **variável de ambiente** (`ADMIN_SECRET`). Validei testando que a API aceita o secret correto e rejeita um inválido.
-
 ---
 
 ## Correções no projeto base
@@ -121,10 +117,8 @@ Ao executar o projeto pela primeira vez, encontrei e corrigi problemas de config
 - **Boa prática — cookie `http_only`:** o token JWT fica num cookie com flag `http_only`, protegendo contra roubo via XSS.
 - **Boa prática — hash de senha:** as senhas são armazenadas apenas como hash, nunca em texto puro.
 - **Corrigido — credencial de admin hardcoded** (ver melhoria 3).
-- **Ponto de atenção — `.env` versionado:** o ideal seria mantê-lo no `.gitignore` com um `.env.example` como modelo.
+- **✅ Corrigido — `.env` fora do versionamento:** removido do tracking, adicionado ao `.gitignore`, com `.env.example` como modelo de configuração.
 - **Ponto de atenção — `f64` para valores monetários:** ponto flutuante pode ter imprecisão de arredondamento; sistemas financeiros reais usam tipos decimais exatos.
-
----
 
 ## Como testar
 
@@ -155,4 +149,3 @@ No fim, sair de um projeto que eu não entendia e nem compilava, para uma aplica
 - Formulário web para cadastrar e editar ativos (hoje o cadastro é via API).
 - Formatação de moeda no padrão brasileiro completo (R$ 388.800,50).
 - Substituir `f64` por um tipo decimal exato para valores monetários.
-- Mover o `.env` para fora do versionamento (`.gitignore` + `.env.example`).
